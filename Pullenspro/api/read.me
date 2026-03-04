@@ -1,0 +1,40 @@
+Pullenspro/
+├── api/
+│   ├── index.py          # FastAPI backend (Redis · rate limiting · circuit breakers)
+│   └── requirements.txt  # Python dependencies
+├── pages/
+│   ├── bulk.tsx          # CSV upload page with drag-and-drop
+│   └── jobs.tsx          # Job monitor with smart polling
+├── .env.example          # Environment variable reference
+├── railway.json          # Railway deployment config
+└── README.md
+Features
+Backend (api/index.py)
+Sliding-window rate limiting per IP via Redis sorted sets
+Per-service circuit breakers (Hunter / Clearbit / Apollo) with CLOSED → OPEN → HALF_OPEN FSM
+Redis result caching (1h TTL, cache-key based on lead fields)
+Bulk CSV processing up to 5,000 rows with bounded asyncio.Semaphore concurrency
+Streaming CSV download of enriched results
+Webhook notification on job completion
+/health, /circuit-breakers, /cache/stats observability endpoints
+Frontend
+pages/bulk.tsx — drag-and-drop CSV upload, source toggles, concurrency slider, XHR upload progress
+pages/jobs.tsx — real-time job cards, smart polling (1.5s active / 30s idle), filter/search, cancel + CSV download
+Quick Start
+# Backend
+cd api
+pip install -r requirements.txt
+uvicorn index:app --reload
+
+# Frontend (add pages/ to an existing Next.js project)
+NEXT_PUBLIC_API_URL=http://localhost:8000 next dev
+CSV Format
+domain,email,first_name,last_name,company
+acme.com,,Jane,Doe,Acme Corp
+,bob@example.com,Bob,Smith,
+Deploy to Railway
+Push to GitHub
+Create a new Railway project → connect repo
+Add a Redis plugin — REDIS_URL is injected automatically
+Set HUNTER_API_KEY, CLEARBIT_API_KEY, APOLLO_API_KEY in Variables
+Railway reads railway.json for build/start commands
