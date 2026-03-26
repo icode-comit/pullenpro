@@ -3,7 +3,7 @@ nixPkgs = [
   "python311",
   "python311Packages.pip",
   "python311Packages.virtualenv",
-  "nodejs"          # ← this was missing
+  "nodejs"
 ]
 
 [phases.install]
@@ -11,11 +11,11 @@ cmds = [
   "python3.11 -m venv /opt/venv",
   "/opt/venv/bin/pip install --upgrade pip setuptools wheel",
   "/opt/venv/bin/pip install -r api/requirements.txt",
-  "npm ci"          # ← installs all Node dependencies (including dev deps needed for build)
+  "npm install"          # ← changed from "npm ci"
 ]
 
 [phases.build]
-cmds = ["npm run build"]   # ← explicitly runs your Next.js build
+cmds = ["npm run build"]
 
 [start]
 cmd = "/opt/venv/bin/uvicorn api.index:app --host 0.0.0.0 --port $PORT --workers 2"
